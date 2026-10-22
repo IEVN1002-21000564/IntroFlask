@@ -4,7 +4,7 @@ class DevelopmentConfig():
     MYSQL_USER='admin'
     MYSQL_PASSWORD='root'
     MYSQL_DB='api_utl'
-
-    config={
-        'development':DevelopmentConfig
-    }
+   
+config={
+    'development': DevelopmentConfig
+}
