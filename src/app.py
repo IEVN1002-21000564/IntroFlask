@@ -103,22 +103,44 @@ def registra_alumno():
             return jsonify({"message": "Alumno registrado", 'exito': True})
     except Exception as ex:
         return jsonify({"message": f"Error {ex}", 'exito': False})
+
 @app.route("/alumnos/<mat>", methods=['PUT'])
-def actualizar_cursor(mat):
+def actualizar_alumno(mat):
     try:
-        alumno=leer_alumno_bd(mat)
+        alumno = leer_alumno_bd(mat)
         if alumno != None:
-            cursor=con.connection.cursor()
-            sql="""UPDATE alumnos SET nombre='{0}', apaterno'{1}', amaterno'{2}', correo'{3}' 
-            WHERE matricula={4}""".format(request.json['nombre'], 
+            cursor = con.connection.cursor()
+            # Corregido: se añadieron los signos '=' faltantes y comillas en 'exito'
+            sql = """UPDATE alumnos SET nombre='{0}', apaterno='{1}', amaterno='{2}', correo='{3}' 
+            WHERE matricula='{4}'""".format(
+                request.json['nombre'], 
                 request.json['apaterno'], 
                 request.json['amaterno'], 
-                request.json['correo'],mat)
-                cursor.execute(sql)
-                con.connection.commit()
-                return jsonify({'mensaje': "Alumno actualizado.", exito: True})
-            else:
-                return jsonify({"message": "Alumno no encontrado", 'exito': False})
+                request.json['correo'],
+                mat
+            )
+            cursor.execute(sql)
+            con.connection.commit()
+            return jsonify({'mensaje': "Alumno actualizado.", 'exito': True})
+        else:
+            return jsonify({"message": "Alumno no encontrado", 'exito': False})
+    except Exception as ex:
+        return jsonify({"message": "Error {0}".format(ex), 'exito': False})
+
+@app.route("/alumnos/<mat>", methods=['DELETE'])
+def eliminar_alumno(mat):
+    try:
+        # Corregido: llamada correcta a leer_alumno_bd y validación con if
+        alumno = leer_alumno_bd(mat)
+        if alumno != None:
+            cursor = con.connection.cursor()
+            # Corregido: se agregó WHERE y el parámetro mat en .format(mat)
+            sql = "DELETE FROM alumnos WHERE matricula = '{0}'".format(mat)
+            cursor.execute(sql)
+            con.connection.commit()
+            return jsonify({'mensaje': "Alumno eliminado", 'exito': True})
+        else:
+            return jsonify({"message": "Alumno no encontrado", 'exito': False})
     except Exception as ex:
         return jsonify({"message": "Error {0}".format(ex), 'exito': False})
 
